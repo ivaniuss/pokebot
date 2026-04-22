@@ -1,0 +1,1532 @@
+{
+  "TWISTED_SPOON": {
+    "name": "TWISTED_SPOON",
+    "stats": {
+      "ap": 10,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MAGNET": {
+    "name": "MAGNET",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "BLACK_GLASSES": {
+    "name": "BLACK_GLASSES",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 10,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MIRACLE_SEED": {
+    "name": "MIRACLE_SEED",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 15,
+      "range": 0
+    }
+  },
+  "CHARCOAL": {
+    "name": "CHARCOAL",
+    "stats": {
+      "ap": 0,
+      "atk": 3,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "NEVER_MELT_ICE": {
+    "name": "NEVER_MELT_ICE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 3,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "HEART_SCALE": {
+    "name": "HEART_SCALE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 3,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MYSTIC_WATER": {
+    "name": "MYSTIC_WATER",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 15,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "OLD_AMBER": {
+    "name": "OLD_AMBER",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "DAWN_STONE": {
+    "name": "DAWN_STONE",
+    "stats": {
+      "ap": 20,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "WATER_STONE": {
+    "name": "WATER_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 30,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "THUNDER_STONE": {
+    "name": "THUNDER_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 20,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "FIRE_STONE": {
+    "name": "FIRE_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 6,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MOON_STONE": {
+    "name": "MOON_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 6,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "DUSK_STONE": {
+    "name": "DUSK_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 20,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "LEAF_STONE": {
+    "name": "LEAF_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 30,
+      "range": 0
+    }
+  },
+  "ICE_STONE": {
+    "name": "ICE_STONE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 6,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "CHOICE_SPECS": {
+    "name": "CHOICE_SPECS",
+    "stats": {
+      "ap": 100,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SOUL_DEW": {
+    "name": "SOUL_DEW",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "UPGRADE": {
+    "name": "UPGRADE",
+    "stats": {
+      "ap": 10,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "REAPER_CLOTH": {
+    "name": "REAPER_CLOTH",
+    "stats": {
+      "ap": 10,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 20,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "POKEMONOMICON": {
+    "name": "POKEMONOMICON",
+    "stats": {
+      "ap": 30,
+      "atk": 3,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "POWER_LENS": {
+    "name": "POWER_LENS",
+    "stats": {
+      "ap": 10,
+      "atk": 0,
+      "def": 0,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SHELL_BELL": {
+    "name": "SHELL_BELL",
+    "stats": {
+      "ap": 0,
+      "atk": 5,
+      "def": 0,
+      "speDef": 5,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "HEAVY_DUTY_BOOTS": {
+    "name": "HEAVY_DUTY_BOOTS",
+    "stats": {
+      "ap": 50,
+      "atk": 0,
+      "def": 12,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "AQUA_EGG": {
+    "name": "AQUA_EGG",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 30,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "BLUE_ORB": {
+    "name": "BLUE_ORB",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 15,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SCOPE_LENS": {
+    "name": "SCOPE_LENS",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 15,
+      "critChance": 25,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "STAR_DUST": {
+    "name": "STAR_DUST",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 15,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "GREEN_ORB": {
+    "name": "GREEN_ORB",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 15,
+      "range": 0
+    }
+  },
+  "DEEP_SEA_TOOTH": {
+    "name": "DEEP_SEA_TOOTH",
+    "stats": {
+      "ap": 0,
+      "atk": 7,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 15,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SMOKE_BALL": {
+    "name": "SMOKE_BALL",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 10,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "XRAY_VISION": {
+    "name": "XRAY_VISION",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 50,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "RAZOR_FANG": {
+    "name": "RAZOR_FANG",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 10,
+      "critPower": 100,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "LOADED_DICE": {
+    "name": "LOADED_DICE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 3,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 30,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "PUNCHING_GLOVE": {
+    "name": "PUNCHING_GLOVE",
+    "stats": {
+      "ap": 0,
+      "atk": 3,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MUSCLE_BAND": {
+    "name": "MUSCLE_BAND",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 3,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "STICKY_BARB": {
+    "name": "STICKY_BARB",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 6,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 15,
+      "range": 0
+    }
+  },
+  "ABILITY_SHIELD": {
+    "name": "ABILITY_SHIELD",
+    "stats": {
+      "ap": 10,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "WIDE_LENS": {
+    "name": "WIDE_LENS",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 3,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 15,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 2
+    }
+  },
+  "RAZOR_CLAW": {
+    "name": "RAZOR_CLAW",
+    "stats": {
+      "ap": 0,
+      "atk": 3,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 50,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SAFETY_GOGGLES": {
+    "name": "SAFETY_GOGGLES",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 3,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 10,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "KINGS_ROCK": {
+    "name": "KINGS_ROCK",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 100,
+      "range": 0
+    }
+  },
+  "SHINY_CHARM": {
+    "name": "SHINY_CHARM",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 3,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "PROTECTIVE_PADS": {
+    "name": "PROTECTIVE_PADS",
+    "stats": {
+      "ap": 0,
+      "atk": 6,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 60,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "ASSAULT_VEST": {
+    "name": "ASSAULT_VEST",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 40,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "AMULET_COIN": {
+    "name": "AMULET_COIN",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "POKE_DOLL": {
+    "name": "POKE_DOLL",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 3,
+      "speDef": 3,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "RED_ORB": {
+    "name": "RED_ORB",
+    "stats": {
+      "ap": 0,
+      "atk": 10,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "FLAME_ORB": {
+    "name": "FLAME_ORB",
+    "stats": {
+      "ap": 0,
+      "atk": 5,
+      "def": 3,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "ROCKY_HELMET": {
+    "name": "ROCKY_HELMET",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 25,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MAGMARIZER": {
+    "name": "MAGMARIZER",
+    "stats": {
+      "ap": 0,
+      "atk": 5,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "MACHO_BRACE": {
+    "name": "MACHO_BRACE",
+    "stats": {
+      "ap": 0,
+      "atk": 15,
+      "def": 0,
+      "speDef": 0,
+      "speed": -15,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "LIGHT_BALL": {
+    "name": "LIGHT_BALL",
+    "stats": {
+      "ap": 50,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "DRAGON_SCALE": {
+    "name": "DRAGON_SCALE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 5,
+      "speDef": 5,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "METRONOME": {
+    "name": "METRONOME",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 5,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "METAL_COAT": {
+    "name": "METAL_COAT",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 10,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "AIR_BALLOON": {
+    "name": "AIR_BALLOON",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 30,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "EXPLORER_KIT": {
+    "name": "EXPLORER_KIT",
+    "stats": {
+      "ap": 0,
+      "atk": 3,
+      "def": 5,
+      "speDef": 5,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "PROTECTOR": {
+    "name": "PROTECTOR",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 75,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "BERSERK_GENE": {
+    "name": "BERSERK_GENE",
+    "stats": {
+      "ap": 0,
+      "atk": 10,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "ELECTIRIZER": {
+    "name": "ELECTIRIZER",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TERRAIN_EXTENDER": {
+    "name": "TERRAIN_EXTENDER",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 20,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 50,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "INCENSE": {
+    "name": "INCENSE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 30,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "COOKING_POT": {
+    "name": "COOKING_POT",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 10,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "RUNNING_SHOES": {
+    "name": "RUNNING_SHOES",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 15,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "EVIOLITE": {
+    "name": "EVIOLITE",
+    "stats": {
+      "ap": 50,
+      "atk": 10,
+      "def": 10,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 100,
+      "range": 0
+    }
+  },
+  "GOLD_BOTTLE_CAP": {
+    "name": "GOLD_BOTTLE_CAP",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 30,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 50,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "COMET_SHARD": {
+    "name": "COMET_SHARD",
+    "stats": {
+      "ap": 0,
+      "atk": 15,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SHINY_STONE": {
+    "name": "SHINY_STONE",
+    "stats": {
+      "ap": 50,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "ABSORB_BULB": {
+    "name": "ABSORB_BULB",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 20,
+      "speDef": 20,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "GOLD_BOW": {
+    "name": "GOLD_BOW",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 50,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TEAL_MASK": {
+    "name": "TEAL_MASK",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 30,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 100,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "WELLSPRING_MASK": {
+    "name": "WELLSPRING_MASK",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 10,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 100,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "CORNERSTONE_MASK": {
+    "name": "CORNERSTONE_MASK",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 10,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 100,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "HEARTHFLAME_MASK": {
+    "name": "HEARTHFLAME_MASK",
+    "stats": {
+      "ap": 0,
+      "atk": 10,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 100,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "SILK_SCARF": {
+    "name": "SILK_SCARF",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 15,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "FRIEND_BOW": {
+    "name": "FRIEND_BOW",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 30,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "BLACK_BELT": {
+    "name": "BLACK_BELT",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 20,
+      "critPower": 0,
+      "shield": 15,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "NULLIFY_BANDANNA": {
+    "name": "NULLIFY_BANDANNA",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 30,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "LUCKY_RIBBON": {
+    "name": "LUCKY_RIBBON",
+    "stats": {
+      "ap": 50,
+      "atk": 0,
+      "def": 10,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 30,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "EXPLOSIVE_BAND": {
+    "name": "EXPLOSIVE_BAND",
+    "stats": {
+      "ap": 0,
+      "atk": 3,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 50,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TWIST_BAND": {
+    "name": "TWIST_BAND",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 20,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 50,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "BIG_EATER_BELT": {
+    "name": "BIG_EATER_BELT",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 15,
+      "luck": 0,
+      "hp": 50,
+      "range": 0
+    }
+  },
+  "MACH_RIBBON": {
+    "name": "MACH_RIBBON",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 10,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 15,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "COVER_BAND": {
+    "name": "COVER_BAND",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 12,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 50,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "EFFICIENT_BANDANNA": {
+    "name": "EFFICIENT_BANDANNA",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 15,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 15,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TATSUGIRI_CURLY": {
+    "name": "TATSUGIRI_CURLY",
+    "stats": {
+      "ap": 0,
+      "atk": 8,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TATSUGIRI_DROOPY": {
+    "name": "TATSUGIRI_DROOPY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 8,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  },
+  "TATSUGIRI_STRETCHY": {
+    "name": "TATSUGIRI_STRETCHY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 25,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    }
+  }
+}

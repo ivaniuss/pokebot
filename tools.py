@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 # ── Load knowledge base once ──────────────────────────────────────────────────
-_KB_PATH = Path(__file__).parent.parent / "knowledge_base" / "knowledge_base.json"
+_KB_PATH = Path(__file__).parent / "knowledge_base" / "knowledge_base.json"
 
 def _load_kb():
     if not _KB_PATH.exists():
