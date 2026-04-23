@@ -1528,5 +1528,377 @@
       "hp": 0,
       "range": 0
     }
+  },
+  "GRACIDEA_FLOWER": {
+    "name": "GRACIDEA_FLOWER",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "components": [
+      "MAGNET",
+      "MIRACLE_SEED"
+    ],
+    "description": "Heals holder and adjacent allies"
+  },
+  "WONDER_BOX": {
+    "name": "WONDER_BOX",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "components": [
+      "BLACK_GLASSES",
+      "BLACK_GLASSES"
+    ],
+    "description": "Random item each combat round"
+  },
+  "MAX_REVIVE": {
+    "name": "MAX_REVIVE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "components": [
+      "MIRACLE_SEED",
+      "NEVER_MELT_ICE"
+    ],
+    "description": "Resurrect once per combat"
+  },
+  "CHEF_HAT": {
+    "name": "CHEF_HAT",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Cook berries into dishes (Gourmet synergy only)"
+  },
+  "SPELL_TAG": {
+    "name": "SPELL_TAG",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Curses the attacker on death"
+  },
+  "EXP_SHARE": {
+    "name": "EXP_SHARE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Gives bonus XP to holder"
+  },
+  "DYNAMAX_BAND": {
+    "name": "DYNAMAX_BAND",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Triples holder base HP"
+  },
+  "POKERUS_VIAL": {
+    "name": "POKERUS_VIAL",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Spreads Pokerus (bonus stats) to adjacent allies"
+  },
+  "SACRED_ASH": {
+    "name": "SACRED_ASH",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Revives all fainted allies once"
+  },
+  "RUSTED_SWORD": {
+    "name": "RUSTED_SWORD",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Greatly boosts ATK (Zacian only)"
+  },
+  "SURFBOARD": {
+    "name": "SURFBOARD",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Grants Water type and surf ability"
+  },
+  "WHITE_FLUTE": {
+    "name": "WHITE_FLUTE",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Attracts wild Pokémon (PvE rounds)"
+  },
+  "RARE_CANDY": {
+    "name": "RARE_CANDY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Instantly evolves the holder"
+  },
+  "MAX_ELIXIR": {
+    "name": "MAX_ELIXIR",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Fills PP to max at combat start"
+  },
+  "TINY_MUSHROOM": {
+    "name": "TINY_MUSHROOM",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Cooking ingredient"
+  },
+  "SALAC_BERRY": {
+    "name": "SALAC_BERRY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Boosts speed when HP is low"
+  },
+  "GANLON_BERRY": {
+    "name": "GANLON_BERRY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Boosts defense when HP is low"
+  },
+  "APICOT_BERRY": {
+    "name": "APICOT_BERRY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Boosts special defense when HP is low"
+  },
+  "LEPPA_BERRY": {
+    "name": "LEPPA_BERRY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Restores PP during combat"
+  },
+  "LUM_BERRY": {
+    "name": "LUM_BERRY",
+    "stats": {
+      "ap": 0,
+      "atk": 0,
+      "def": 0,
+      "speDef": 0,
+      "speed": 0,
+      "pp": 0,
+      "critChance": 0,
+      "critPower": 0,
+      "shield": 0,
+      "luck": 0,
+      "hp": 0,
+      "range": 0
+    },
+    "description": "Cures status conditions"
   }
 }

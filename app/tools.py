@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 # ── Load knowledge base once ──────────────────────────────────────────────────
-_KB_PATH = Path(__file__).parent / "knowledge_base" / "knowledge_base.json"
+_KB_PATH = Path(__file__).parent.parent / "knowledge_base" / "knowledge_base.json"
 
 def _load_kb():
     if not _KB_PATH.exists():
@@ -24,6 +24,24 @@ POKEMON  = KB["pokemon"]
 ITEMS    = KB["items"]
 SYNERGIES = KB["synergies"]
 
+# ── Item display helper ──────────────────────────────────────────────────────
+def _item_label(item_name: str) -> str:
+    """Build a human-readable label for an item (stats or description)."""
+    item = ITEMS.get(item_name)
+    if item is None:
+        return "(unknown item — not in knowledge base)"
+
+    stats = item.get("stats", {})
+    active = {k: v for k, v in stats.items() if v != 0}
+    if active:
+        return "  ".join(f"+{v} {k}" for k, v in active.items())
+
+    desc = item.get("description", "")
+    if desc:
+        return desc
+
+    return "utility item (no stat bonuses)"
+
 # ── Item role scoring ─────────────────────────────────────────────────────────
 def _score_item_for_role(item: dict, role: str) -> float:
     s = item["stats"]
@@ -35,18 +53,34 @@ def _score_item_for_role(item: dict, role: str) -> float:
         return s["hp"] * 1.5 + s["def"] * 3 + s["speDef"] * 2.5 + s["shield"] * 1.0
     if role == "support":
         return s["pp"] * 2 + s["shield"] * 2 + s["luck"] * 1.5 + s["speDef"] * 1.0
-    # "auto" — balanced
     return (s["ap"] + s["atk"] * 2 + s["hp"] + s["def"] + s["speDef"]) * 1.0
 
 def _infer_role(p: dict) -> str:
-    """Infer a Pokémon's likely role from its stats."""
-    if p["range"] >= 3 and p["speDef"] > p["def"]:
-        return "carry_ap"
-    if p["range"] >= 2 and p["atk"] > 20:
-        return "carry_atk"
-    if p["hp"] >= 200 and p["def"] >= 10:
+    hp    = p["hp"]
+    atk   = p["atk"]
+    def_  = p["def"]
+    rng   = p["range"]
+    types = set(p.get("types", []))
+
+    AP_TYPES        = {"PSYCHIC","GHOST","FAIRY","FIRE","ICE","DRAGON",
+                        "ELECTRIC","GRASS","POISON","AMORPHOUS","LIGHT"}
+    MELEE_ATK_TYPES = {"FIGHTING","STEEL","DARK","ROCK","BUG","WILD"}
+
+    if hp >= 250 or def_ >= 15:
         return "tank"
-    return "carry_ap"  # safe default for ranged
+    if hp >= 200 and def_ >= 10:
+        return "tank"
+    if rng >= 2 and AP_TYPES & types:
+        return "carry_ap"
+    if rng >= 2 and MELEE_ATK_TYPES & types and atk >= 15:
+        return "carry_atk"
+    if rng >= 2:
+        return "carry_ap"
+    if MELEE_ATK_TYPES & types and atk >= 10:
+        return "carry_atk"
+    if atk >= 12:
+        return "carry_atk"
+    return "carry_ap"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TOOL 1 — Pokemon info
@@ -57,13 +91,9 @@ def get_pokemon_info(name: str) -> str:
     Get detailed information about a specific Pokémon in Pokémon Auto Chess.
     Returns its types/synergies, stats, cost, skill (ability), and evolution chain.
     Use this when the player asks about a specific Pokémon.
-
-    Args:
-        name: Pokémon name in SCREAMING_SNAKE_CASE (e.g. GARDEVOIR, PIKACHU, CHARIZARD).
     """
     key = name.upper().replace(" ", "_").replace("-", "_")
 
-    # Fuzzy fallback: substring match
     if key not in POKEMON:
         matches = [k for k in POKEMON if key in k]
         if not matches:
@@ -72,7 +102,6 @@ def get_pokemon_info(name: str) -> str:
 
     p = POKEMON[key]
 
-    # Build evolution chain
     chain = [key]
     visited = {key}
     current = p
@@ -104,19 +133,20 @@ def get_pokemon_info(name: str) -> str:
 # TOOL 2 — Item recommendations
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def _item_has_useful_stats(item_name: str, min_stat: int = 10) -> bool:
+    """Check if item has at least one stat >= min_stat."""
+    item = ITEMS.get(item_name, {})
+    stats = item.get("stats", {})
+    for v in stats.values():
+        if v >= min_stat:
+            return True
+    return False
+
+
 def recommend_items(pokemon_name: str, role: str = "auto") -> str:
     """
     Recommend the best items to equip on a specific Pokémon in Pokémon Auto Chess.
     Each Pokémon can hold up to 3 items.
-
-    Args:
-        pokemon_name: Name of the Pokémon in SCREAMING_SNAKE_CASE (e.g. GARDEVOIR).
-        role: The Pokémon's intended role. One of:
-              - "auto"      → inferred from stats (default)
-              - "carry_ap"  → ability-power damage dealer
-              - "carry_atk" → physical attack damage dealer
-              - "tank"      → frontline with high HP/DEF
-              - "support"   → utility, mana, shields
     """
     key = pokemon_name.upper().replace(" ", "_").replace("-", "_")
 
@@ -129,33 +159,82 @@ def recommend_items(pokemon_name: str, role: str = "auto") -> str:
     p = POKEMON[key]
     effective_role = _infer_role(p) if role == "auto" else role
 
-    # Score all items
+    freq = p.get("item_frequency", {})
+    total_item_assignments = 0
+    for item_data in freq.values():
+        if isinstance(item_data, dict):
+            total_item_assignments += item_data.get("count", 0)
+        else:
+            total_item_assignments += item_data
+
+    has_bot_data = bool(p.get("recommended_items")) and freq
+
+    if has_bot_data:
+        sorted_items = sorted(
+            freq.items(),
+            key=lambda kv: (kv[1]["count"] if isinstance(kv[1], dict) else kv[1]),
+            reverse=True
+        )
+        top_bot = [(item, data) for item, data in sorted_items[:6]]
+        useful_bot_items = [x for x in top_bot if _item_has_useful_stats(x[0])]
+
+        lines = [
+            f"=== Item recommendations for {p['name']} ===",
+            f"Types: {', '.join(p['types'])}",
+            f"Role detected: {effective_role} (HP {p['hp']}, DEF {p['def']}, Range {p['range']})",
+        ]
+
+        if useful_bot_items:
+            lines += ["", "── FROM BOTS ──"]
+            for item_name, item_data in useful_bot_items:
+                if isinstance(item_data, dict):
+                    count = item_data.get("count", 0)
+                    elo_total = item_data.get("elo_total", 0)
+                    pct = (count / total_item_assignments * 100) if total_item_assignments > 0 else 0
+                    avg_elo = elo_total / count if count > 0 else 0
+                    lines.append(
+                        f"  • {item_name}: {_item_label(item_name)}  "
+                        f"({count}x, {pct:.0f}%, avg ELO {avg_elo:.0f})"
+                    )
+
+        lines += ["", "── RECOMMENDED FOR THIS ROLE ──"]
+        scored = sorted(
+            ITEMS.items(),
+            key=lambda kv: _score_item_for_role(kv[1], effective_role),
+            reverse=True,
+        )
+        bot_item_names = [x[0] for x in useful_bot_items]
+        for item_name, item in scored:
+            if item_name not in bot_item_names:
+                lines.append(f"  • {item_name}: {_item_label(item_name)}")
+                if len(lines) - 8 >= 5:
+                    break
+
+        return "\n".join(lines)
+
     scored = sorted(
         ITEMS.items(),
         key=lambda kv: _score_item_for_role(kv[1], effective_role),
         reverse=True,
     )
-
     top3 = scored[:3]
     top10 = scored[:10]
 
     lines = [
         f"=== Item recommendations for {p['name']} ===",
-        f"Detected role: {effective_role}",
+        f"Source: heuristic (no bot build data available)",
+        f"Role detected: {effective_role} (HP {p['hp']}, DEF {p['def']}, Range {p['range']})",
         f"Types: {', '.join(p['types'])}",
         "",
-        "── TOP 3 (equip these) ──",
+        "── HEURISTIC ──",
+        "  Based on role: " + effective_role,
     ]
     for item_name, item in top3:
-        active = {k: v for k, v in item["stats"].items() if v != 0}
-        stats_str = "  ".join(f"+{v} {k}" for k, v in active.items())
-        lines.append(f"  • {item_name}: {stats_str or 'special effect'}")
+        lines.append(f"  • {item_name}: {_item_label(item_name)}")
 
     lines += ["", "── Honorable mentions ──"]
     for item_name, item in top10[3:]:
-        active = {k: v for k, v in item["stats"].items() if v != 0}
-        stats_str = "  ".join(f"+{v} {k}" for k, v in active.items() if v > 0)
-        lines.append(f"  • {item_name}: {stats_str or 'special effect'}")
+        lines.append(f"  • {item_name}: {_item_label(item_name)}")
 
     return "\n".join(lines)
 
@@ -169,14 +248,9 @@ def synergy_advisor(team: str) -> str:
     Analyze the current team composition and advise on synergies.
     Shows which synergies are active, which are close to the next threshold,
     and which cheap Pokémon would complete or upgrade a synergy.
-
-    Args:
-        team: Comma-separated list of Pokémon names currently on the board.
-              Example: "RALTS, KIRLIA, ABRA, PIKACHU"
     """
     names = [n.strip().upper().replace(" ", "_").replace("-", "_") for n in team.split(",")]
 
-    # Resolve names
     resolved = []
     not_found = []
     for n in names:
@@ -192,7 +266,6 @@ def synergy_advisor(team: str) -> str:
     if not resolved:
         return "No valid Pokémon found. Check the names and try again."
 
-    # Count synergy contributions
     synergy_count: dict[str, int] = {}
     for name in resolved:
         for t in POKEMON[name]["types"]:
@@ -201,11 +274,10 @@ def synergy_advisor(team: str) -> str:
     lines = [f"=== Synergy analysis for: {', '.join(resolved)} ===", ""]
 
     if not_found:
-        lines.append(f"⚠ Not found (skipped): {', '.join(not_found)}\n")
+        lines.append(f"Not found (skipped): {', '.join(not_found)}\n")
 
-    # Classify synergies
     active   = []
-    close    = []  # 1 away from next threshold
+    close    = []
     inactive = []
 
     for syn_name, count in sorted(synergy_count.items(), key=lambda x: -x[1]):
@@ -215,7 +287,6 @@ def synergy_advisor(team: str) -> str:
         thresholds = syn["thresholds"]
         effects    = syn["effects_per_level"]
 
-        # Find current level and next threshold
         current_level = sum(1 for t in thresholds if count >= t)
         current_effect = effects[current_level - 1] if current_level > 0 else None
         next_threshold = next((t for t in thresholds if t > count), None)
@@ -228,27 +299,24 @@ def synergy_advisor(team: str) -> str:
         else:
             inactive.append((syn_name, count, next_threshold))
 
-    # Active synergies
-    lines.append("✅ ACTIVE SYNERGIES:")
+    lines.append("ACTIVE SYNERGIES:")
     if active:
         for syn_name, count, level, effect, next_t, next_eff in active:
-            upgrade = f"  →  +{next_t - count} for {next_eff}" if next_t else "  (MAX)"
+            upgrade = f"  ->  +{next_t - count} for {next_eff}" if next_t else "  (MAX)"
             lines.append(f"  {syn_name} [{count}/{SYNERGIES[syn_name]['thresholds'][-1]}]  "
                          f"Level {level} ({effect}){upgrade}")
     else:
         lines.append("  None active yet.")
 
-    # Close to activation
-    lines.append("\n🔶 CLOSE (1-2 Pokémon away):")
+    lines.append("\nCLOSE (1-2 away):")
     if close:
         for syn_name, count, next_t, next_eff in close:
             needed = next_t - count
-            # Suggest cheap Pokémon
             candidates = [
                 pname for pname in SYNERGIES[syn_name]["pokemon"]
                 if pname not in resolved and not POKEMON[pname]["additional"]
             ][:5]
-            lines.append(f"  {syn_name}: {count}/{next_t}  (+{needed} → {next_eff})")
+            lines.append(f"  {syn_name}: {count}/{next_t}  (+{needed} -> {next_eff})")
             if candidates:
                 lines.append(f"    Suggestions: {', '.join(candidates)}")
     else:
@@ -265,12 +333,6 @@ def team_optimizer(available: str, budget: int = 50) -> str:
     """
     Given a pool of available Pokémon and a gold budget, suggest the optimal
     team composition that maximizes synergy activations.
-    Use this when the player wants to know which Pokémon to buy from the shop.
-
-    Args:
-        available: Comma-separated list of Pokémon available in the shop or on bench.
-                   Example: "PIKACHU, RAICHU, JOLTEON, GARDEVOIR, RALTS"
-        budget: Gold available to spend (default 50). Used to filter by cost.
     """
     names = [n.strip().upper().replace(" ", "_").replace("-", "_") for n in available.split(",")]
 
@@ -286,22 +348,19 @@ def team_optimizer(available: str, budget: int = 50) -> str:
     if not pool:
         return "No valid Pokémon in the pool. Check the names."
 
-    # Filter by budget
     affordable = [n for n in pool if (POKEMON[n]["cost"] or 99) <= budget]
 
     if not affordable:
         return f"No Pokémon affordable with {budget}g budget."
 
-    # Find which synergy groups we can contribute to
     synergy_candidates: dict[str, list] = {}
     for name in affordable:
         for t in POKEMON[name]["types"]:
             synergy_candidates.setdefault(t, []).append(name)
 
-    # Score each synergy by how many Pokémon we have towards first threshold
-    lines = [f"=== Team optimizer  |  Pool: {len(affordable)} Pokémon  |  Budget: {budget}g ===", ""]
+    lines = [f"=== Team optimizer  |  Pool: {len(affordable)} Pokemon  |  Budget: {budget}g ===", ""]
 
-    lines.append("📊 SYNERGY POTENTIAL IN YOUR POOL:")
+    lines.append("SYNERGY POTENTIAL IN YOUR POOL:")
     scored_syns = []
     for syn_name, members in synergy_candidates.items():
         syn = SYNERGIES.get(syn_name)
@@ -320,12 +379,11 @@ def team_optimizer(available: str, budget: int = 50) -> str:
         effect = SYNERGIES[syn_name]["effects_per_level"][0] if SYNERGIES[syn_name]["effects_per_level"] else "?"
         lines.append(
             f"  {syn_name:12}  [{bar}] {len(members)}/{first_t}  "
-            f"→ {effect}"
+            f"-> {effect}"
         )
-        lines.append(f"    Pokémon: {', '.join(members[:6])}")
+        lines.append(f"    Pokemon: {', '.join(members[:6])}")
 
-    # Recommend a core team (greedy: pick the synergy with most coverage, add those Pokémon)
-    lines.append("\n🏆 RECOMMENDED CORE TEAM:")
+    lines.append("\nRECOMMENDED CORE TEAM:")
     if scored_syns:
         best_syn, best_members, best_thresholds, _ = scored_syns[0]
         core = best_members[: best_thresholds[0]]
@@ -334,7 +392,6 @@ def team_optimizer(available: str, budget: int = 50) -> str:
         lines.append(f"  Core:  {', '.join(core)}")
         lines.append(f"  Cost:  {total_cost}g")
 
-        # Fill remaining slots with next best synergy
         remaining_budget = budget - total_cost
         if scored_syns[1:]:
             second_syn, second_members, second_thresholds, _ = scored_syns[1]
