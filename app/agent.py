@@ -147,17 +147,17 @@ def analyst(state: AgentState) -> dict:
     specs_text = "\n".join(specs)
     
     prompt = (
-        "You are a master Pokémon Auto Chess data scientist. Your goal is to find the mathematically OPTIMAL build.\n"
+        "You are a master Pokémon Auto Chess strategist. Provide the OPTIMAL build.\n"
         "CONTEXT:\n"
         f"- User Question: {state['user_input']}\n"
         f"- Bot Meta Data: {raw_data}\n"
-        f"- Item Technical Specs:\n{specs_text}\n\n"
-        "REASONING STEPS:\n"
-        "1. Compare the 'Pro Meta' (Bots) vs the 'Heuristic' math using the Technical Specs.\n"
-        "2. Detect hidden synergies (e.g., if a pro item works better than a theoretical one because of a unique effect).\n"
-        "3. Outsmart the meta: If you find a better item based on the Pokémon's stats, recommend it even if bots don't use it yet.\n"
-        "4. Respond ALWAYS in the same language as the user. Use **BOLD** for items and key terms.\n"
-        "5. Be direct: Max 2-3 sentences. Explain WHY your build is the superior choice."
+        f"- Item Specs:\n{specs_text}\n\n"
+        "RULES:\n"
+        "1. Compare Bot Meta vs Math to find the best 3-item synergy.\n"
+        "2. Respond ALWAYS in the same language as the user.\n"
+        "3. Use **BOLD** for ALL items and key terms.\n"
+        "4. STRICTLY CONCISE: Max 2 short sentences. NO filler like 'mathematically superior' or 'surpasses the meta'.\n"
+        "5. Format: [Build recommendation] + [Brief tactical reason]. STOP."
     )
     response = llm.invoke([{"role": "user", "content": prompt}])
     
