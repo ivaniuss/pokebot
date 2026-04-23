@@ -2516,8 +2516,7 @@
     "skill": "STUN_SPORE",
     "types": [
       "FLORA",
-      "POISON",
-      "GRASS"
+      "POISON"
     ],
     "stars": 1,
     "nbStages": 3,
@@ -2544,8 +2543,7 @@
     "skill": "STUN_SPORE",
     "types": [
       "FLORA",
-      "POISON",
-      "GRASS"
+      "POISON"
     ],
     "stars": 2,
     "nbStages": 3,
@@ -2562,7 +2560,7 @@
     "index": "0045",
     "rarity": "SPECIAL",
     "cost": null,
-    "hp": 230,
+    "hp": 250,
     "atk": 24,
     "speed": 41,
     "def": 8,
@@ -2572,8 +2570,7 @@
     "skill": "STUN_SPORE",
     "types": [
       "FLORA",
-      "POISON",
-      "GRASS"
+      "POISON"
     ],
     "stars": 3,
     "nbStages": 3,
@@ -3969,7 +3966,6 @@
     "skill": "INGRAIN",
     "types": [
       "GRASS",
-      "POISON",
       "FLORA"
     ],
     "stars": 1,
@@ -3997,7 +3993,6 @@
     "skill": "INGRAIN",
     "types": [
       "GRASS",
-      "POISON",
       "FLORA"
     ],
     "stars": 2,
@@ -4025,7 +4020,6 @@
     "skill": "INGRAIN",
     "types": [
       "GRASS",
-      "POISON",
       "FLORA"
     ],
     "stars": 3,
@@ -9801,8 +9795,8 @@
     "maxPP": 90,
     "skill": "SWEET_SCENT",
     "types": [
-      "GRASS",
-      "FLORA"
+      "FLORA",
+      "FAIRY"
     ],
     "stars": 1,
     "nbStages": 3,
@@ -9828,8 +9822,8 @@
     "maxPP": 90,
     "skill": "SWEET_SCENT",
     "types": [
-      "GRASS",
-      "FLORA"
+      "FLORA",
+      "FAIRY"
     ],
     "stars": 2,
     "nbStages": 3,
@@ -9862,8 +9856,8 @@
     "maxPP": 90,
     "skill": "SWEET_SCENT",
     "types": [
-      "GRASS",
-      "FLORA"
+      "FLORA",
+      "FAIRY"
     ],
     "stars": 3,
     "nbStages": 3,
@@ -11210,7 +11204,7 @@
     "index": "0182",
     "rarity": "SPECIAL",
     "cost": null,
-    "hp": 250,
+    "hp": 300,
     "atk": 30,
     "speed": 41,
     "def": 10,
@@ -11220,7 +11214,6 @@
     "skill": "PETAL_BLIZZARD",
     "types": [
       "FLORA",
-      "GRASS",
       "SOUND"
     ],
     "stars": 4,
@@ -11512,7 +11505,7 @@
     "rarity": "SPECIAL",
     "cost": null,
     "hp": 50,
-    "atk": 4,
+    "atk": 5,
     "speed": 60,
     "def": 2,
     "speDef": 2,
@@ -11521,8 +11514,7 @@
     "skill": "ACROBATICS",
     "types": [
       "FLYING",
-      "FLORA",
-      "GRASS"
+      "FLORA"
     ],
     "stars": 1,
     "nbStages": 3,
@@ -11540,7 +11532,7 @@
     "rarity": "SPECIAL",
     "cost": null,
     "hp": 100,
-    "atk": 8,
+    "atk": 10,
     "speed": 60,
     "def": 3,
     "speDef": 4,
@@ -11549,8 +11541,7 @@
     "skill": "ACROBATICS",
     "types": [
       "FLYING",
-      "FLORA",
-      "GRASS"
+      "FLORA"
     ],
     "stars": 2,
     "nbStages": 3,
@@ -11575,7 +11566,7 @@
     "rarity": "SPECIAL",
     "cost": null,
     "hp": 150,
-    "atk": 12,
+    "atk": 15,
     "speed": 60,
     "def": 4,
     "speDef": 6,
@@ -11584,8 +11575,7 @@
     "skill": "ACROBATICS",
     "types": [
       "FLYING",
-      "FLORA",
-      "GRASS"
+      "FLORA"
     ],
     "stars": 3,
     "nbStages": 3,
@@ -21981,8 +21971,8 @@
     "hp": 200,
     "atk": 15,
     "speed": 46,
-    "def": 10,
-    "speDef": 12,
+    "def": 8,
+    "speDef": 9,
     "range": 3,
     "maxPP": 80,
     "skill": "ECHO",
@@ -26892,8 +26882,8 @@
     "hp": 150,
     "atk": 10,
     "speed": 46,
-    "def": 7,
-    "speDef": 8,
+    "def": 5,
+    "speDef": 6,
     "range": 3,
     "maxPP": 80,
     "skill": "ECHO",
@@ -27270,7 +27260,7 @@
     "speed": 54,
     "def": 4,
     "speDef": 4,
-    "range": 3,
+    "range": 2,
     "maxPP": 80,
     "skill": "CHATTER",
     "types": [
@@ -44417,11 +44407,11 @@
     "index": "0725",
     "rarity": "EPIC",
     "cost": 4,
-    "hp": 90,
+    "hp": 95,
     "atk": 8,
     "speed": 44,
     "def": 8,
-    "speDef": 6,
+    "speDef": 8,
     "range": 1,
     "maxPP": 100,
     "skill": "DARK_LARIAT",
@@ -44445,11 +44435,11 @@
     "index": "0726",
     "rarity": "EPIC",
     "cost": 4,
-    "hp": 170,
-    "atk": 14,
+    "hp": 180,
+    "atk": 15,
     "speed": 44,
     "def": 12,
-    "speDef": 10,
+    "speDef": 12,
     "range": 1,
     "maxPP": 100,
     "skill": "DARK_LARIAT",
@@ -44495,11 +44485,11 @@
     "index": "0727",
     "rarity": "EPIC",
     "cost": 4,
-    "hp": 280,
-    "atk": 24,
+    "hp": 300,
+    "atk": 30,
     "speed": 44,
     "def": 16,
-    "speDef": 14,
+    "speDef": 16,
     "range": 1,
     "maxPP": 100,
     "skill": "DARK_LARIAT",
