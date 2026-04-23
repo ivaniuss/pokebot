@@ -192,9 +192,9 @@ def _build_item_embed(
         files.append(f)
         embed.set_thumbnail(url="attachment://pokemon.png")
 
-    # Item strip — only include bot items
+    # Item strip — only include top 3 bot items
     bot_items_raw = _extract_section_items(tool_result, "FROM BOTS")
-    bot_strip = bot_items_raw[:6]
+    bot_strip = bot_items_raw[:3]
     
     # Empty list for AI items as we want to hide them from the strip
     ai_strip = []

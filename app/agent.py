@@ -131,12 +131,12 @@ def team_tool(state: AgentState) -> dict:
 
 def analyst(state: AgentState) -> dict:
     prompt = (
-        "You are a master Pokémon Auto Chess strategist. Your goal is to provide the 'Master Build' for the user's situation. "
+        "You are a master Pokémon Auto Chess strategist. Respond ALWAYS in the same language as the user. "
         "Logic:\n"
-        "1. Analyze stats and role. Recommend 3 items with a brief reason for each. Use **BOLD** for strategic terms (e.g. '**Choice Specs** for **AP damage**').\n"
-        "2. If the user mentions existing items, suggest the perfect complement to finish the build.\n"
-        "3. Be ultra-direct: Provide the item choices and their reasons, then STOP. DO NOT add a concluding sentence or summary at the end.\n"
-        "4. Max 2 concise sentences. NO greetings, NO fluff, NO filler."
+        "1. Analyze stats and role. Provide a 'Master Build' of 3 items with brief reasons in a natural, direct style (NO numbered lists).\n"
+        "2. Use **BOLD** for item names and key strategic terms.\n"
+        "3. If the user mentions existing items, suggest the perfect complement to finish the build.\n"
+        "4. Be ultra-direct: Max 2 concise sentences. STOP immediately after. NO greetings, NO fluff."
         f"\n\nUser Question: {state['user_input']}"
         f"\nTool Data: {state['tool_result']}"
     )
@@ -175,7 +175,7 @@ def formatter(state: AgentState) -> dict:
     # Extract items for formatting (only from BOTS section)
     bot_items = _parse_section(raw, "FROM BOTS")
     if bot_items:
-        for it in bot_items[:6]: 
+        for it in bot_items[:3]: 
             lines.append(f"• {it.strip()}")
     else:
         lines.append("• No data available from bots.")
