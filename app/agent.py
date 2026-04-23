@@ -72,11 +72,12 @@ def _parse_section(text: str, header: str) -> list[str]:
     idx = text.find(header)
     if idx == -1: return []
     
-    # Find the start of the next section to avoid mixing items
-    next_sec = text.find("──", idx + len(header) + 5)
+    # Find the next header starting with newlines and dashes
+    # This ensures we stop at the next '── SECTION ──'
+    next_sec = text.find("\n──", idx)
     section = text[idx : next_sec if next_sec != -1 else len(text)]
     
-    # Capture the full line of each bullet point (Item: Stats)
+    # Capture the full line of each bullet point
     return re.findall(r"•\s+(.+)", section)
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -130,12 +131,12 @@ def team_tool(state: AgentState) -> dict:
 
 def analyst(state: AgentState) -> dict:
     prompt = (
-        "You are a pro Pokémon Auto Chess strategist. Answer concisely in the user's language. "
+        "You are a master Pokémon Auto Chess strategist. Your goal is to provide the 'Master Build' for the user's situation. "
         "Logic:\n"
-        "1. If the user mentions items they ALREADY HAVE, do not recommend them again. "
-        "Suggest a COMPLEMENTARY 3rd item to round out the build (e.g., if they have only damage, suggest survival/PP).\n"
-        "2. Balance stats: If a Pokémon is too fragile, suggest a defensive item. If it's a tank with no impact, suggest some utility/damage.\n"
-        "3. Be direct: Max 2-3 sentences. NO greetings or filler."
+        "1. Analyze stats and role. Recommend 3 items with a brief reason for each (e.g. 'Use A for survival, B for AP, and C for CC').\n"
+        "2. If the user mentions existing items, suggest the perfect complement to finish the build.\n"
+        "3. Be ultra-direct: Provide the item choices and their reasons, then STOP. DO NOT add a concluding sentence or summary at the end.\n"
+        "4. Max 2 concise sentences. NO greetings, NO fluff, NO filler."
         f"\n\nUser Question: {state['user_input']}"
         f"\nTool Data: {state['tool_result']}"
     )
