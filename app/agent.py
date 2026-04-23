@@ -131,18 +131,15 @@ def team_tool(state: AgentState) -> dict:
 
 def analyst(state: AgentState) -> dict:
     prompt = (
-        "SYSTEM RULES:\n"
-        "- Respond ALWAYS in the same language as the user.\n"
-        "- MANDATORY: Use **DOUBLE ASTERISKS** for all item names and key terms (e.g., **Choice Specs**).\n"
-        "- FORMAT: Max 2 sentences. Recommend 3 items + reasons. STOP immediately after.\n"
-        "- NO summary or concluding sentences. NO greetings.\n\n"
-        "EXAMPLES:\n"
-        "User: que items le doy al gengar\n"
-        "Response: Usa **Eviolite** para **supervivencia**, **Choice Specs** para **daño explosivo** y **Shiny Stone** para escalar **AP**. Este build compensa la fragilidad de **Gengar** mientras maximiza su impacto.\n\n"
-        "User: items for snorlax tank\n"
-        "Response: Equip **Rocky Helmet** for **physical defense**, **Assault Vest** for **special bulk** and **Leftovers** for **passive healing**. This set makes **Snorlax** an unkillable frontline wall.\n\n"
-        f"USER QUESTION: {state['user_input']}\n"
-        f"TOOL DATA: {state['tool_result']}"
+        "You are a master Pokémon Auto Chess data analyst. Respond ALWAYS in the same language as the user. "
+        "CRITICAL RULE: ALWAYS keep item names in ENGLISH, exactly as they appear in the tool data (e.g., use **Choice Specs**, NOT 'Gafas Elección').\n"
+        "Logic:\n"
+        "1. Evaluate 'FROM BOTS' data: Prioritize items with high ELO (>1400) and high frequency.\n"
+        "2. Compare with stats: Use the Pokémon's stats and role to validate if the items make sense (e.g. no defense for Range 3).\n"
+        "3. Resolve conflicts: If high-ELO players use something different from the math, explain why the 'pro meta' might be superior.\n"
+        "4. Be direct (max 2-3 sentences): Suggest the final build and justify it based on ELO and stats. Use **BOLD** for terms."
+        f"\n\nUser Question: {state['user_input']}"
+        f"\nTool Data: {state['tool_result']}"
     )
     response = llm.invoke([{"role": "user", "content": prompt}])
     
