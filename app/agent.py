@@ -208,12 +208,19 @@ def formatter(state: AgentState) -> dict:
         lines.append(state["analysis"])
         lines.append("")
         
+    # Dynamic section label based on quality
+    section_label = {
+        "HIGH": "**FROM BOTS (REAL DATA)**",
+        "MEDIUM": "**FROM BOTS (MEDIUM ELO)**",
+        "LOW": "**HEURISTIC BUILD (no bot data)**",
+    }.get(quality, "**HEURISTIC BUILD (no bot data)**")
+
     lines += [
         f"**{pokemon_name.replace('_', ' ').title()}**",
         f"Rol: {role_display} | {stats}",
         f"**Confidence: {quality_display}**",
         "",
-        "**FROM BOTS (REAL DATA)**"
+        section_label
     ]
     
     # Extract items for formatting (only from BOTS section)

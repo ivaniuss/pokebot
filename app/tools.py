@@ -138,10 +138,6 @@ def _item_has_useful_stats(item_name: str, min_stat: int = 10) -> bool:
 
 
 def _elo_weighted_score(item_data: dict | int, total: int) -> float:
-    """
-    Calculate a score based on quality (ELO) and popularity (Frequency).
-    ELO weights 60%, Frequency weights 40%.
-    """
     if not isinstance(item_data, dict):
         return float(item_data)
     
@@ -151,7 +147,7 @@ def _elo_weighted_score(item_data: dict | int, total: int) -> float:
     freq_score = (count / total * 100) if total > 0 else 0
     avg_elo = (elo_total / count) if count > 0 else 0
     
-    # Normalize ELO over a 1500 base (avg ELO estimate)
+    # Normalize ELO over 1500
     elo_score = (avg_elo / 1500) * 100
     
     return (elo_score * 0.6) + (freq_score * 0.4)
@@ -205,8 +201,8 @@ def recommend_items(pokemon_name: str, role: str = "auto") -> str:
         lines = [
             f"=== Item recommendations for {p['name']} ===",
             f"Types: {', '.join(p['types'])}",
-            f"Data quality: {data_quality}",
             f"Role detected: {effective_role} (HP {p['hp']}, DEF {p['def']}, Range {p['range']})",
+            f"Data quality: {data_quality}",
         ]
 
         if useful_bot_items:
