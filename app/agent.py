@@ -19,6 +19,7 @@ from typing import Literal, Optional
 
 from dotenv import find_dotenv, load_dotenv
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import TypedDict
 
@@ -30,7 +31,8 @@ logger = logging.getLogger("pokebot.agent")
 
 # ── LLM (only used as fallback for intent / entity extraction) ───────────────
 
-llm = ChatOpenAI(model_name="gpt-5.4-mini", temperature=0)
+# llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite-preview", temperature=0, convert_system_message_to_human=True)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # 1. STATE DEFINITION
