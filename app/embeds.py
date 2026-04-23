@@ -125,7 +125,12 @@ def _extract_section_items(text: str, section_header: str) -> list[str]:
     idx = text.find(section_header)
     if idx == -1:
         return []
-    next_section = text.find("──", idx + len(section_header))
+    
+    # Start looking for the NEXT section after the current header's line
+    # We skip at least 10 chars to avoid finding the closing '──' of the current header
+    search_start = idx + len(section_header) + 5
+    next_section = text.find("──", search_start)
+    
     section_text = text[idx: next_section if next_section > idx else len(text)]
     return _extract_names(section_text, _KB["items"])
 
