@@ -1,13 +1,6 @@
 """
 agent.py
 PokeBot — State-driven LangGraph agent for Pokémon Auto Chess.
-
-Architecture:
-    classify_intent → extract_entities → router → (tool) → formatter
-
-All routing is deterministic via state. The LLM is only used for
-intent classification and entity extraction as a fallback.
-The formatter is a pure Python function — no LLM.
 """
 
 from __future__ import annotations
@@ -15,13 +8,14 @@ from __future__ import annotations
 import logging
 import re
 import difflib
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 
 from dotenv import find_dotenv, load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import TypedDict
+from pydantic import BaseModel, Field
 
 from app.tools import recommend_items, team_optimizer, POKEMON as VALID_POKEMON_DB
 
@@ -29,8 +23,7 @@ load_dotenv(find_dotenv())
 
 logger = logging.getLogger("pokebot.agent")
 
-# ── LLM (only used as fallback for intent / entity extraction) ───────────────
-
+# ── LLM ───────────────────────────────────────────────────────────────────────
 # llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite-preview", temperature=0, convert_system_message_to_human=True)
 
@@ -42,403 +35,171 @@ class AgentState(TypedDict):
     user_input: str
     intent: Optional[Literal["items", "team"]]
     pokemon_names: list[str]
+    query_items: list[str]
     role: Optional[str]
     tool_name: Optional[str]
     tool_args: Optional[dict]
     tool_result: Optional[str]
+    analysis: Optional[str]
     response: Optional[str]
 
+class IntentClassification(BaseModel):
+    intent: Literal["items", "team"] = Field(description="The user's primary intent.")
+
+class EntityExtraction(BaseModel):
+    pokemon_names: list[str] = Field(description="List of Pokémon names mentioned.")
+    query_items: list[str] = Field(description="Specific item names mentioned (e.g. 'explosive band').", default_factory=list)
+    role: Optional[Literal["tank", "carry_ap", "carry_atk", "support"]] = Field(description="Role mentioned.", default=None)
+
+# ── Chains ────────────────────────────────────────────────────────────────────
+_INTENT_SYSTEM = "Classify if the user wants item recommendations ('items') or team/synergy advice ('team')."
+_intent_chain = llm.with_structured_output(IntentClassification)
+
+_ENTITY_SYSTEM = (
+    "Extract Pokémon names (normalized to SCREAMING_SNAKE_CASE) and any specific items mentioned. "
+    "Also detect the role (tank, carry_ap, carry_atk, support)."
+)
+_entity_chain = llm.with_structured_output(EntityExtraction)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # 2. HELPER UTILITIES
 # ═════════════════════════════════════════════════════════════════════════════
 
 def _normalize_name(name: str) -> str:
-    """Convert any Pokémon name to SCREAMING_SNAKE_CASE."""
-    return name.strip().upper().replace(" ", "_").replace("-", "_").replace(".", "")
+    return name.upper().strip().replace(" ", "_").replace("-", "_").replace(".", "")
 
-
-# ── Pydantic schemas for LLM structured output ──────────────────────────────
-
-from pydantic import BaseModel, Field
-
-
-class IntentClassification(BaseModel):
-    """The classified intent of a user message about Pokémon Auto Chess."""
-    intent: Literal["items", "team"] = Field(
-        description=(
-            "'items' if the user is asking about items, builds, or equipment "
-            "for a specific Pokémon. "
-            "'team' if the user is asking about team composition, synergies, "
-            "or optimization across multiple Pokémon."
-        )
-    )
-
-
-class EntityExtraction(BaseModel):
-    """Pokémon names and optional role extracted from a user message."""
-    pokemon_names: list[str] = Field(
-        description=(
-            "List of Pokémon names mentioned by the user, each in "
-            "SCREAMING_SNAKE_CASE. Examples: GARDEVOIR, MR_MIME, "
-            "HISUIAN_TYPHLOSION. Only include actual Pokémon names, "
-            "not other words."
-        )
-    )
-    role: Optional[Literal["tank", "carry_ap", "carry_atk", "support"]] = Field(
-        default=None,
-        description=(
-            "The gameplay role the user wants for the Pokémon, if mentioned. "
-            "tank = defensive/HP focus, carry_ap = ability power/magic damage, "
-            "carry_atk = physical attack damage, support = utility/shields. "
-            "null if the user didn't specify a role."
-        ),
-    )
-
-
-# ── Bound LLM chains with structured output ─────────────────────────────────
-
-_intent_chain = llm.with_structured_output(IntentClassification)
-_entity_chain = llm.with_structured_output(EntityExtraction)
-
-_INTENT_SYSTEM = (
-    "You are a classifier for Pokémon Auto Chess queries. "
-    "Classify the user's message into exactly one intent:\n"
-    "- 'items': the user asks about items, builds, or equipment for a Pokémon\n"
-    "- 'team': the user asks about team composition, synergies, or optimization\n"
-    "The message can be in any language."
-)
-
-_ENTITY_SYSTEM = (
-    "You are an expert entity extractor for Pokémon Auto Chess. "
-    "Your task is to identify Pokémon names and the requested gameplay role from the user message. "
-    "\n\nRULES:"
-    "\n1. Extract ALL Pokémon names mentioned."
-    "\n2. Convert names to SCREAMING_SNAKE_CASE (e.g., 'Mr. Mime' -> 'MR_MIME', 'Tapu Koko' -> 'TAPU_KOKO')."
-    "\n3. Identify the role ONLY if explicitly mentioned or strongly implied (tank, carry_ap, carry_atk, support)."
-    "\n4. The message can be in any language (English, Spanish, etc.)."
-    "\n5. If no Pokémon are found, return an empty list."
-)
-
-
+def _parse_section(text: str, header: str) -> list[str]:
+    idx = text.find(header)
+    if idx == -1: return []
+    section = text[idx:]
+    # Items are usually bulleted like '  • ITEM_NAME: description'
+    return re.findall(r"•\s+([A-Z][A-Z0-9_]+):", section)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # 3. NODE IMPLEMENTATIONS
 # ═════════════════════════════════════════════════════════════════════════════
 
 def classify_intent(state: AgentState) -> dict:
-    """Classify user intent using LLM with structured output."""
-    logger.info(f"[classify_intent] Input: {state['user_input'][:100]}")
-
-    result: IntentClassification = _intent_chain.invoke([
-        {"role": "system", "content": _INTENT_SYSTEM},
-        {"role": "user", "content": state["user_input"]},
-    ])
-
-    logger.info(f"[classify_intent] Intent: {result.intent}")
+    result = _intent_chain.invoke([{"role": "user", "content": state["user_input"]}])
     return {"intent": result.intent}
 
-
 def extract_entities(state: AgentState) -> dict:
-    """Extract Pokémon names and role using LLM, then validate against DB."""
-    logger.info(f"[extract_entities] Processing input: {state['user_input'][:50]}...")
-
-    result: EntityExtraction = _entity_chain.invoke([
-        {"role": "system", "content": _ENTITY_SYSTEM},
-        {"role": "user", "content": state["user_input"]},
-    ])
-
-    # Normalize and Validate
+    result = _entity_chain.invoke([{"role": "user", "content": state["user_input"]}])
     raw_names = result.pokemon_names
     validated_names = []
-    all_valid_names = list(VALID_POKEMON_DB.keys())
-    
+    all_valid = list(VALID_POKEMON_DB.keys())
     for name in raw_names:
         norm = _normalize_name(name)
-        # 1. Direct match
-        if norm in VALID_POKEMON_DB:
-            validated_names.append(norm)
+        if norm in VALID_POKEMON_DB: validated_names.append(norm)
         else:
-            # 2. Fuzzy match (tolerates typos like 'gudurr')
-            matches = difflib.get_close_matches(norm, all_valid_names, n=1, cutoff=0.7)
-            if matches:
-                validated_names.append(matches[0])
-                logger.info(f"[extract_entities] Fuzzy match: {norm} -> {matches[0]}")
-            else:
-                logger.warning(f"[extract_entities] Pokémon not found in DB: {norm}")
+            matches = difflib.get_close_matches(norm, all_valid, n=1, cutoff=0.7)
+            if matches: validated_names.append(matches[0])
+    return {"pokemon_names": validated_names, "query_items": result.query_items, "role": result.role}
 
-    logger.info(f"[extract_entities] Final Names={validated_names}, Role={result.role}")
-    return {"pokemon_names": validated_names, "role": result.role}
-
-
-def router(state: AgentState) -> dict:
-    """
-    Decide which tool to call and prepare its arguments.
-    Pure state-driven — no LLM.
-    """
+def router(state: AgentState):
     intent = state["intent"]
     names = state["pokemon_names"]
-
     if intent == "items":
-        return {
-            "tool_name": "recommend_items",
-            "tool_args": {
-                "pokemon_name": names[0] if names else None,
-                "role": state.get("role") or "auto",
-            },
-        }
-
-    if intent == "team":
-        return {
-            "tool_name": "team_optimizer",
-            "tool_args": {
-                "pokemon_names": names,
-            },
-        }
-
-    # Should never reach here because classify_intent always picks one
-    return {
-        "tool_name": "recommend_items",
-        "tool_args": {"pokemon_name": names[0] if names else "PIKACHU", "role": "auto"},
-    }
-
+        return "recommend_items"
+    return "team_optimizer"
 
 def items_tool(state: AgentState) -> dict:
-    """Call the recommend_items tool."""
-    args = state["tool_args"] or {}
-    pokemon_name = args.get("pokemon_name")
-    role = args.get("role", "auto")
-
-    if not pokemon_name:
-        return {"tool_result": "Error: No Pokémon found in your query."}
-
-    logger.info(f"[items_tool] Calling recommend_items({pokemon_name}, {role})")
-    result = recommend_items(pokemon_name=pokemon_name, role=role)
-    logger.info(f"[items_tool] Result length: {len(result)} chars")
-    return {"tool_result": result}
-
+    pokemon_name = state["pokemon_names"][0] if state["pokemon_names"] else None
+    if not pokemon_name: return {"tool_result": "No Pokémon found."}
+    
+    role = state.get("role") or "auto"
+    main_result = recommend_items(pokemon_name, role)
+    
+    from app.tools import get_item_details
+    item_details = []
+    for item in state.get("query_items", []):
+        item_details.append(get_item_details(item))
+    
+    combined = main_result
+    if item_details:
+        combined += "\n\n── SPECIFIC ITEM DETAILS ──\n" + "\n".join(item_details)
+    return {"tool_result": combined}
 
 def team_tool(state: AgentState) -> dict:
-    """Call the team_optimizer tool."""
-    args = state["tool_args"] or {}
-    names = args.get("pokemon_names", [])
-    csv_names = ", ".join(names)
-
-    logger.info(f"[team_tool] Calling team_optimizer({csv_names[:80]})")
-    result = team_optimizer(available=csv_names)
-    logger.info(f"[team_tool] Result length: {len(result)} chars")
+    result = team_optimizer(", ".join(state["pokemon_names"]))
     return {"tool_result": result}
 
+def analyst(state: AgentState) -> dict:
+    prompt = (
+        "You are a pro Pokémon Auto Chess strategist. Answer concisely in the user's language. "
+        "Logic:\n"
+        "1. If the user mentions items they ALREADY HAVE, do not recommend them again. "
+        "Suggest a COMPLEMENTARY 3rd item to round out the build (e.g., if they have only damage, suggest survival/PP).\n"
+        "2. Balance stats: If a Pokémon is too fragile, suggest a defensive item. If it's a tank with no impact, suggest some utility/damage.\n"
+        "3. Be direct: Max 2-3 sentences. NO greetings or filler."
+        f"\n\nUser Question: {state['user_input']}"
+        f"\nTool Data: {state['tool_result']}"
+    )
+    response = llm.invoke([{"role": "user", "content": prompt}])
+    
+    # Extract content and handle list format (Gemini specific)
+    content = response.content if hasattr(response, 'content') else str(response)
+    if isinstance(content, list):
+        # Join text parts if it's a list of blocks
+        content = " ".join([block.get("text", "") if isinstance(block, dict) else str(block) for block in content])
+    
+    return {"analysis": content}
 
 def formatter(state: AgentState) -> dict:
-    """
-    Format the final response.
-    This is a PURE PYTHON function — no LLM. Output format is strictly
-    determined by state['intent'].
-    """
-    intent = state["intent"]
-    result = state["tool_result"] or ""
-    names = state["pokemon_names"]
-
-    logger.info(f"[formatter] Formatting for intent={intent}")
-
-    if intent == "items":
-        response = _format_items_response(result, names, state.get("role"))
-    elif intent == "team":
-        response = _format_team_response(result, names)
-    else:
-        response = result
-
-    return {"response": response}
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# 4. FORMATTER LOGIC (pure Python, no LLM)
-# ═════════════════════════════════════════════════════════════════════════════
-
-def _format_items_response(raw: str, names: list[str], role: Optional[str]) -> str:
-    """
-    Parse the raw recommend_items output and reformat into a clean
-    and detailed description.
-    """
-    pokemon_name = names[0] if names else "UNKNOWN"
+    raw = state["tool_result"] or ""
+    pokemon_name = state["pokemon_names"][0] if state["pokemon_names"] else "Unknown"
     pdata = VALID_POKEMON_DB.get(pokemon_name, {})
     
-    # Extract the actually used role from the tool output
-    actual_role = "AUTO"
+    # Simple extraction for the display
     role_match = re.search(r"Role detected: ([\w_]+)", raw)
-    if role_match:
-        actual_role = role_match.group(1).upper()
-    
-    # Show the specific role, sanitized
-    role_display = actual_role.replace("_", " ")
-
-    # Stats string
+    role_display = role_match.group(1).replace("_", " ").upper() if role_match else "AUTO"
     stats = f"HP: {pdata.get('hp', '?')} | DEF: {pdata.get('def', '?')} | Range: {pdata.get('range', '?')}"
     
-    cost = pdata.get('cost')
-    cost_str = f" | Cost: {cost}g" if cost is not None else ""
-
-    # Parse sections
-    bot_items = _parse_section(raw, "FROM BOTS")
-    rec_items = _parse_section(raw, "AI RECOMMENDED") or _parse_section(raw, "RECOMMENDED FOR THIS ROLE")
-
-    lines = [
+    lines = []
+    if state.get("analysis"):
+        lines.append(state["analysis"])
+        lines.append("")
+        
+    lines += [
         f"**{pokemon_name.replace('_', ' ').title()}**",
-        f"Rol: {role_display} | {stats}{cost_str}",
+        f"Rol: {role_display} | {stats}",
         "",
         "**FROM BOTS (REAL DATA)**"
     ]
     
+    # Extract items for formatting
+    bot_items = _parse_section(raw, "FROM BOTS")
     if bot_items:
-        for item_line in bot_items[:5]:
-            lines.append(f"• {item_line}")
+        for it in bot_items[:3]: lines.append(f"• {it}")
     else:
         lines.append("• No data available from bots.")
-
-    if rec_items:
-        lines.append("")
-        lines.append("**AI RECOMMENDED**")
-        for item_line in rec_items[:5]:
-            lines.append(f"• {item_line}")
-
-    return "\n".join(lines)
-
-
-def _format_team_response(raw: str, names: list[str]) -> str:
-    """
-    Parse the raw team_optimizer output and reformat into the strict
-    team format.
-    """
-    # Parse synergy potential
-    synergies = _parse_section(raw, "SYNERGY POTENTIAL IN YOUR POOL:")
-    # Parse recommended core team
-    core_team = _parse_section(raw, "RECOMMENDED CORE TEAM:")
-
-    lines = ["[TEAM OPTIMIZATION]"]
-
-    if synergies:
-        lines.append("")
-        lines.append("**CORE SYNERGY**")
-        for syn_line in synergies:
-            lines.append(f"• {syn_line}")
-
-    if core_team:
-        lines.append("")
-        lines.append("**RECOMMENDED UNITS**")
-        for unit_line in core_team:
-            # Try to label ADD/KEEP/REMOVE based on context
-            clean = unit_line.strip()
-            if clean.startswith("Focus:"):
-                lines.append(f"• {clean}")
-            elif clean.startswith("Core:"):
-                # Split core members and label KEEP
-                core_members = clean.replace("Core:", "").strip()
-                for member in core_members.split(","):
-                    member = member.strip()
-                    if member:
-                        label = "KEEP" if member in names else "ADD"
-                        lines.append(f"• {label}: {member}")
-            elif clean.startswith("+"):
-                # Secondary synergy additions
-                lines.append(f"• ADD: {clean[1:].strip()}")
-            else:
-                lines.append(f"• {clean}")
-
-    lines.append("")
-    lines.append("**NOTES**")
-    lines.append("• Focus on completing your strongest synergy first.")
-    if len(names) >= 4:
-        lines.append("• Consider bench space — prioritize units that activate two synergies.")
-
-    return "\n".join(lines)
-
-
-def _parse_section(raw: str, header: str) -> list[str]:
-    """Extract bullet points / lines from a named section in tool output."""
-    idx = raw.find(header)
-    if idx == -1:
-        # Try case-insensitive
-        lower_raw = raw.lower()
-        lower_header = header.lower()
-        idx = lower_raw.find(lower_header)
-        if idx == -1:
-            return []
-
-    # Find the start of content after the header
-    content_start = raw.find("\n", idx)
-    if content_start == -1:
-        return []
-    content_start += 1
-
-    # Find the end: next section header (── or ===) or end of string
-    next_section = len(raw)
-    for marker in ["──", "===", "SYNERGY POTENTIAL", "RECOMMENDED CORE"]:
-        pos = raw.find(marker, content_start)
-        if pos != -1 and pos < next_section:
-            next_section = pos
-
-    section_text = raw[content_start:next_section].strip()
-    if not section_text:
-        return []
-
-    lines = []
-    for line in section_text.split("\n"):
-        cleaned = line.strip().lstrip("•·-").strip()
-        if cleaned:
-            lines.append(cleaned)
-
-    return lines
-
+        
+    lines.append("\n**AI RECOMMENDED**")
+    rec_items = _parse_section(raw, "RECOMMENDED FOR THIS ROLE")
+    for it in rec_items[:3]: lines.append(f"• {it}")
+    
+    return {"response": "\n".join(lines)}
 
 # ═════════════════════════════════════════════════════════════════════════════
-# 5. ROUTING FUNCTION (for conditional edges)
-# ═════════════════════════════════════════════════════════════════════════════
-
-def route_to_tool(state: AgentState) -> str:
-    """Conditional edge: route to the correct tool node based on state."""
-    tool = state.get("tool_name")
-    logger.info(f"[route_to_tool] Routing to: {tool}")
-    if tool == "team_optimizer":
-        return "team_tool"
-    return "items_tool"
-
-
-# ═════════════════════════════════════════════════════════════════════════════
-# 6. GRAPH WIRING
+# 4. GRAPH CONSTRUCTION
 # ═════════════════════════════════════════════════════════════════════════════
 
 def build_graph() -> StateGraph:
-    """Build and compile the PokeBot LangGraph."""
-    builder = StateGraph(AgentState)
+    workflow = StateGraph(AgentState)
+    workflow.add_node("classify_intent", classify_intent)
+    workflow.add_node("extract_entities", extract_entities)
+    workflow.add_node("recommend_items", items_tool)
+    workflow.add_node("team_optimizer", team_tool)
+    workflow.add_node("analyst", analyst)
+    workflow.add_node("formatter", formatter)
 
-    # Add nodes
-    builder.add_node("classify_intent", classify_intent)
-    builder.add_node("extract_entities", extract_entities)
-    builder.add_node("router", router)
-    builder.add_node("items_tool", items_tool)
-    builder.add_node("team_tool", team_tool)
-    builder.add_node("formatter", formatter)
+    workflow.add_edge(START, "classify_intent")
+    workflow.add_edge("classify_intent", "extract_entities")
+    workflow.add_conditional_edges("extract_entities", router)
+    workflow.add_edge("recommend_items", "analyst")
+    workflow.add_edge("team_optimizer", "analyst")
+    workflow.add_edge("analyst", "formatter")
+    workflow.add_edge("formatter", END)
+    return workflow.compile()
 
-    # Edges: START → classify_intent → extract_entities → router
-    builder.add_edge(START, "classify_intent")
-    builder.add_edge("classify_intent", "extract_entities")
-    builder.add_edge("extract_entities", "router")
-
-    # Conditional edge: router → items_tool OR team_tool
-    builder.add_conditional_edges(
-        "router",
-        route_to_tool,
-        {"items_tool": "items_tool", "team_tool": "team_tool"},
-    )
-
-    # Tools → formatter → END
-    builder.add_edge("items_tool", "formatter")
-    builder.add_edge("team_tool", "formatter")
-    builder.add_edge("formatter", END)
-
-    return builder.compile()
-
-
-# ── Compiled graph (singleton) ────────────────────────────────────────────────
 graph = build_graph()
