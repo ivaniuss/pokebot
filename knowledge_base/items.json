@@ -1364,13 +1364,13 @@
     "stats": {
       "ap": 50,
       "atk": 0,
-      "def": 10,
+      "def": 0,
       "speDef": 0,
       "speed": 0,
       "pp": 0,
       "critChance": 0,
       "critPower": 0,
-      "shield": 0,
+      "shield": 15,
       "luck": 30,
       "hp": 0,
       "range": 0
