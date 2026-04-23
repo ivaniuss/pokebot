@@ -130,16 +130,34 @@ def team_tool(state: AgentState) -> dict:
     return {"tool_result": result}
 
 def analyst(state: AgentState) -> dict:
+    from app.tools import get_item_details
+    import re
+    
+    raw_data = state.get("tool_result", "")
+    # Find all items mentioned in the tool data (UPPER_CASE names)
+    item_names = set(re.findall(r"([A-Z][A-Z0-9_]{3,})", raw_data))
+    
+    # Fetch full specs for all these items
+    specs = []
+    for name in item_names:
+        details = get_item_details(name)
+        if "not found" not in details.lower():
+            specs.append(details)
+    
+    specs_text = "\n".join(specs)
+    
     prompt = (
-        "You are a master Pokémon Auto Chess data analyst. Respond ALWAYS in the same language as the user. "
-        "CRITICAL RULE: ALWAYS keep item names in ENGLISH, exactly as they appear in the tool data (e.g., use **Choice Specs**, NOT 'Gafas Elección').\n"
-        "Logic:\n"
-        "1. Evaluate 'FROM BOTS' data: Prioritize items with high ELO (>1400) and high frequency.\n"
-        "2. Compare with stats: Use the Pokémon's stats and role to validate if the items make sense (e.g. no defense for Range 3).\n"
-        "3. Resolve conflicts: If high-ELO players use something different from the math, explain why the 'pro meta' might be superior.\n"
-        "4. Be direct (max 2-3 sentences): Suggest the final build and justify it based on ELO and stats. Use **BOLD** for terms."
-        f"\n\nUser Question: {state['user_input']}"
-        f"\nTool Data: {state['tool_result']}"
+        "You are a master Pokémon Auto Chess data scientist. Your goal is to find the mathematically OPTIMAL build.\n"
+        "CONTEXT:\n"
+        f"- User Question: {state['user_input']}\n"
+        f"- Bot Meta Data: {raw_data}\n"
+        f"- Item Technical Specs:\n{specs_text}\n\n"
+        "REASONING STEPS:\n"
+        "1. Compare the 'Pro Meta' (Bots) vs the 'Heuristic' math using the Technical Specs.\n"
+        "2. Detect hidden synergies (e.g., if a pro item works better than a theoretical one because of a unique effect).\n"
+        "3. Outsmart the meta: If you find a better item based on the Pokémon's stats, recommend it even if bots don't use it yet.\n"
+        "4. Respond ALWAYS in the same language as the user. Use **BOLD** for items and key terms.\n"
+        "5. Be direct: Max 2-3 sentences. Explain WHY your build is the superior choice."
     )
     response = llm.invoke([{"role": "user", "content": prompt}])
     
