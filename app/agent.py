@@ -71,9 +71,13 @@ def _normalize_name(name: str) -> str:
 def _parse_section(text: str, header: str) -> list[str]:
     idx = text.find(header)
     if idx == -1: return []
-    section = text[idx:]
-    # Items are usually bulleted like '  • ITEM_NAME: description'
-    return re.findall(r"•\s+([A-Z][A-Z0-9_]+):", section)
+    
+    # Find the start of the next section to avoid mixing items
+    next_sec = text.find("──", idx + len(header) + 5)
+    section = text[idx : next_sec if next_sec != -1 else len(text)]
+    
+    # Capture the full line of each bullet point (Item: Stats)
+    return re.findall(r"•\s+(.+)", section)
 
 # ═════════════════════════════════════════════════════════════════════════════
 # 3. NODE IMPLEMENTATIONS
@@ -167,16 +171,13 @@ def formatter(state: AgentState) -> dict:
         "**FROM BOTS (REAL DATA)**"
     ]
     
-    # Extract items for formatting
+    # Extract items for formatting (only from BOTS section)
     bot_items = _parse_section(raw, "FROM BOTS")
     if bot_items:
-        for it in bot_items[:3]: lines.append(f"• {it}")
+        for it in bot_items[:6]: 
+            lines.append(f"• {it.strip()}")
     else:
         lines.append("• No data available from bots.")
-        
-    lines.append("\n**AI RECOMMENDED**")
-    rec_items = _parse_section(raw, "RECOMMENDED FOR THIS ROLE")
-    for it in rec_items[:3]: lines.append(f"• {it}")
     
     return {"response": "\n".join(lines)}
 

@@ -192,18 +192,12 @@ def _build_item_embed(
         files.append(f)
         embed.set_thumbnail(url="attachment://pokemon.png")
 
-    # Item strip — extract item names from the raw tool output
-    recommended_items = _extract_section_items(tool_result, "RECOMMENDED FOR THIS ROLE")
+    # Item strip — only include bot items
     bot_items_raw = _extract_section_items(tool_result, "FROM BOTS")
-
-    # Group them for the strip
-    bot_strip = bot_items_raw[:3]
-    ai_strip = [it for it in recommended_items if it not in bot_strip][:3]
+    bot_strip = bot_items_raw[:6]
     
-    # Fallback if no sections
-    if not bot_strip and not ai_strip:
-        all_found = _extract_names(response, _KB["items"])
-        bot_strip = all_found[:3]
+    # Empty list for AI items as we want to hide them from the strip
+    ai_strip = []
 
     strip_buf = _make_item_strip(bot_strip, ai_strip)
     if strip_buf:
