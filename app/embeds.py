@@ -14,8 +14,8 @@ import discord
 from PIL import Image
 
 # ── Asset paths ─────────────────────────────────────────────────────────────
-_REPO = Path(__file__).parent.parent / "pokemonAutoChess" / "app" / "public" / "src" / "assets"
-ITEMS_DIR   = _REPO / "items"
+_REPO = Path(__file__).parent.parent.parent / "pokemonAutoChess" / "app" / "public" / "src" / "assets"
+ITEMS_DIR   = _REPO / "item{tps}"
 POKEMON_DIR = _REPO / "pokemons"
 
 # ── Knowledge base ────────────────────────────────────────────────────────────────
@@ -55,27 +55,55 @@ def _pokemon_path(name: str) -> Optional[Path]:
     path = POKEMON_DIR / f"{idx}.png"
     return path if path.exists() else None
 
-def _make_item_strip(item_names: list[str], icon_size: int = 64) -> Optional[io.BytesIO]:
-    """Stitch up to 3 item icons horizontally."""
-    images = []
-    for name in item_names[:3]:
+def _make_item_strip(
+    bot_items: list[str], 
+    ai_items: list[str], 
+    icon_size: int = 64
+) -> Optional[io.BytesIO]:
+    """Stitch item icons with a gap between Bot and AI groups."""
+    bot_imgs = []
+    for name in bot_items[:3]:
         p = _item_path(name)
         if p:
             try:
-                images.append(Image.open(p).convert("RGBA").resize((icon_size, icon_size)))
-            except Exception:
-                pass
+                bot_imgs.append(Image.open(p).convert("RGBA").resize((icon_size, icon_size)))
+            except Exception: pass
 
-    if not images:
+    ai_imgs = []
+    for name in ai_items[:3]:
+        p = _item_path(name)
+        if p:
+            try:
+                ai_imgs.append(Image.open(p).convert("RGBA").resize((icon_size, icon_size)))
+            except Exception: pass
+
+    if not bot_imgs and not ai_imgs:
         return None
 
     padding = 8
-    total_w  = len(images) * icon_size + (len(images) - 1) * padding
-    total_h  = icon_size
-    strip    = Image.new("RGBA", (total_w, total_h), (0, 0, 0, 0))
+    group_gap = 32  # Large gap between Bot and AI items
+    
+    total_w = (len(bot_imgs) + len(ai_imgs)) * icon_size
+    total_w += (max(0, len(bot_imgs) - 1) + max(0, len(ai_imgs) - 1)) * padding
+    if bot_imgs and ai_imgs:
+        total_w += group_gap
 
-    for i, img in enumerate(images):
-        strip.paste(img, (i * (icon_size + padding), 0), img)
+    strip = Image.new("RGBA", (total_w, icon_size), (0, 0, 0, 0))
+    
+    current_x = 0
+    # Paste bot items
+    for img in bot_imgs:
+        strip.paste(img, (current_x, 0), img)
+        current_x += icon_size + padding
+    
+    # Add gap
+    if bot_imgs and ai_imgs:
+        current_x = current_x - padding + group_gap
+    
+    # Paste AI items
+    for img in ai_imgs:
+        strip.paste(img, (current_x, 0), img)
+        current_x += icon_size + padding
 
     buf = io.BytesIO()
     strip.save(buf, format="PNG")
@@ -116,13 +144,6 @@ def build_embed_from_state(
 ) -> tuple[Optional[discord.Embed], list[discord.File]]:
     """
     Build the correct Discord embed from the agent's final state.
-
-    Reads:
-    - state["intent"]        → decides embed type
-    - state["pokemon_names"] → Pokémon data lookup
-    - state["tool_result"]   → raw tool output for extracting item names
-    - state["response"]      → formatted display text
-    - state["role"]          → role label (items only)
     """
     intent = state.get("intent")
     response = state.get("response", "")
@@ -167,28 +188,23 @@ def _build_item_embed(
         embed.set_thumbnail(url="attachment://pokemon.png")
 
     # Item strip — extract item names from the raw tool output
-    # The RAW tool output uses "FROM BOTS" and "RECOMMENDED FOR THIS ROLE"
     recommended_items = _extract_section_items(tool_result, "RECOMMENDED FOR THIS ROLE")
-    bot_items = _extract_section_items(tool_result, "FROM BOTS")
+    bot_items_raw = _extract_section_items(tool_result, "FROM BOTS")
 
-    strip_items: list[str] = []
-    if bot_items:
-        strip_items += bot_items[:1]
-    if recommended_items:
-        strip_items += recommended_items[:2]
+    # Group them for the strip
+    bot_strip = bot_items_raw[:3]
+    ai_strip = [it for it in recommended_items if it not in bot_strip][:3]
     
-    # Fallback to the formatted response if raw didn't work
-    if not strip_items:
-        strip_items = _extract_names(response, _KB["items"])[:3]
+    # Fallback if no sections
+    if not bot_strip and not ai_strip:
+        all_found = _extract_names(response, _KB["items"])
+        bot_strip = all_found[:3]
 
-    strip_buf = _make_item_strip(strip_items)
+    strip_buf = _make_item_strip(bot_strip, ai_strip)
     if strip_buf:
         f = discord.File(strip_buf, filename="items.png")
         files.append(f)
         embed.set_image(url="attachment://items.png")
-
-    if strip_items:
-        embed.set_footer(text="  ·  ".join(strip_items[:3]))
 
     return embed, files
 
@@ -200,13 +216,11 @@ def _build_team_embed(
     pokemon_names: list[str],
 ) -> tuple[discord.Embed, list[discord.File]]:
     """Build an embed for team optimization using structured state."""
-    # Find the dominant synergy for color
     all_types: list[str] = []
     for name in pokemon_names:
         pdata = POKEMON.get(name, {})
         all_types.extend(pdata.get("types", []))
 
-    # Count synergy frequency to pick dominant color
     type_counts: dict[str, int] = {}
     for t in all_types:
         type_counts[t] = type_counts.get(t, 0) + 1
@@ -232,123 +246,3 @@ def _build_generic_embed(response_text: str) -> discord.Embed:
         description=_clean_text(response_text),
         color=0x7289DA,
     )
-
-
-# ── Legacy: text-based response parser (kept for API/CLI compatibility) ──────
-
-def parse_response(response_text: str) -> tuple[Optional[discord.Embed], list[discord.File]]:
-    """Inspect the response text and build the best embed for it."""
-    text = response_text.upper()
-
-    item_names = _extract_names(response_text, _KB["items"])
-    poke_names = _extract_names(response_text, POKEMON)
-
-    is_item_response    = len(item_names) >= 2
-    is_synergy_response = any(kw in text for kw in ["SYNERGY", "THRESHOLD", "ACTIVE", "SINERGIA"])
-
-    if is_item_response and poke_names:
-        recommended_items = _extract_section_items(response_text, "RECOMMENDED FOR THIS ROLE")
-        bot_items        = _extract_section_items(response_text, "FROM BOTS")
-
-        strip_items = []
-        if bot_items:
-            strip_items += bot_items[:1]
-        if recommended_items:
-            strip_items += recommended_items[:2]
-        if not strip_items:
-            strip_items = item_names[:3]
-
-        embed, files = _build_item_embed_from_text(
-            response_text,
-            pokemon_name=poke_names[0],
-            item_names=strip_items[:3],
-        )
-        return embed, files
-
-    if is_synergy_response:
-        all_syns   = set(SYNERGIES.keys())
-        found_syns = [s for s in all_syns if s in text]
-        split_idx  = text.find("CLOSE") if "CLOSE" in text else len(text)
-        active = [s for s in found_syns if text.index(s) < split_idx]
-        close  = [s for s in found_syns if text.index(s) >= split_idx]
-        if found_syns:
-            embed, files = _build_synergy_embed_from_text(response_text, active, close)
-            return embed, files
-
-    return None, []
-
-
-def _build_item_embed_from_text(
-    response_text: str,
-    pokemon_name: str,
-    item_names: list[str],
-) -> tuple[discord.Embed, list[discord.File]]:
-    """Build an embed for item recommendations from text."""
-    pdata   = POKEMON.get(pokemon_name, {})
-    types   = pdata.get("types", [])
-    color   = SYNERGY_COLORS.get(types[0], 0x7289DA) if types else 0x7289DA
-
-    embed = discord.Embed(
-        title=f"Items for {pokemon_name.replace('_', ' ').title()}",
-        description=_clean_text(response_text),
-        color=color,
-    )
-
-    if pdata:
-        embed.add_field(name="Types", value=" · ".join(f"`{t}`" for t in types), inline=True)
-        embed.add_field(name="Cost", value=f"{pdata.get('cost', '?')}g", inline=True)
-        embed.add_field(
-            name="Role hint",
-            value=f"Range {pdata.get('range','?')} | HP {pdata.get('hp','?')}",
-            inline=True,
-        )
-
-    files: list[discord.File] = []
-
-    poke_path = _pokemon_path(pokemon_name)
-    if poke_path:
-        f = discord.File(poke_path, filename="pokemon.png")
-        files.append(f)
-        embed.set_thumbnail(url="attachment://pokemon.png")
-
-    strip_buf = _make_item_strip(item_names)
-    if strip_buf:
-        f = discord.File(strip_buf, filename="items.png")
-        files.append(f)
-        embed.set_image(url="attachment://items.png")
-
-    if item_names:
-        embed.set_footer(text="  ·  ".join(item_names[:3]))
-
-    return embed, files
-
-
-def _build_synergy_embed_from_text(
-    response_text: str,
-    active_synergies: list[str],
-    close_synergies: list[str],
-) -> tuple[discord.Embed, list[discord.File]]:
-    """Build an embed for synergy analysis from text."""
-    main_syn = active_synergies[0] if active_synergies else (close_synergies[0] if close_synergies else None)
-    color    = SYNERGY_COLORS.get(main_syn, 0x7289DA) if main_syn else 0x7289DA
-
-    embed = discord.Embed(
-        title="Synergy Analysis",
-        description=_clean_text(response_text),
-        color=color,
-    )
-
-    if active_synergies:
-        embed.add_field(
-            name="Active",
-            value="\n".join(f"`{s}`" for s in active_synergies[:6]),
-            inline=True,
-        )
-    if close_synergies:
-        embed.add_field(
-            name="Almost there",
-            value="\n".join(f"`{s}`" for s in close_synergies[:6]),
-            inline=True,
-        )
-
-    return embed, []

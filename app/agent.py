@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 import re
+import difflib
 from typing import Literal, Optional
 
 from dotenv import find_dotenv, load_dotenv
@@ -21,7 +22,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import TypedDict
 
-from app.tools import recommend_items, team_optimizer
+from app.tools import recommend_items, team_optimizer, POKEMON as VALID_POKEMON_DB
 
 load_dotenv(find_dotenv())
 
@@ -117,8 +118,6 @@ _ENTITY_SYSTEM = (
     "\n5. If no Pokémon are found, return an empty list."
 )
 
-from app.tools import POKEMON as VALID_POKEMON_DB
-
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -150,16 +149,16 @@ def extract_entities(state: AgentState) -> dict:
     # Normalize and Validate
     raw_names = result.pokemon_names
     validated_names = []
+    all_valid_names = list(VALID_POKEMON_DB.keys())
     
     for name in raw_names:
         norm = _normalize_name(name)
-        # Direct match
+        # 1. Direct match
         if norm in VALID_POKEMON_DB:
             validated_names.append(norm)
         else:
-            # Fuzzy fallback: check if it's a substring of any valid name
-            # This helps with things like "Pika" -> "PIKACHU"
-            matches = [k for k in VALID_POKEMON_DB.keys() if norm in k]
+            # 2. Fuzzy match (tolerates typos like 'gudurr')
+            matches = difflib.get_close_matches(norm, all_valid_names, n=1, cutoff=0.7)
             if matches:
                 validated_names.append(matches[0])
                 logger.info(f"[extract_entities] Fuzzy match: {norm} -> {matches[0]}")
@@ -182,7 +181,7 @@ def router(state: AgentState) -> dict:
         return {
             "tool_name": "recommend_items",
             "tool_args": {
-                "pokemon_name": names[0] if names else "PIKACHU",
+                "pokemon_name": names[0] if names else None,
                 "role": state.get("role") or "auto",
             },
         }
@@ -205,8 +204,11 @@ def router(state: AgentState) -> dict:
 def items_tool(state: AgentState) -> dict:
     """Call the recommend_items tool."""
     args = state["tool_args"] or {}
-    pokemon_name = args.get("pokemon_name", "PIKACHU")
+    pokemon_name = args.get("pokemon_name")
     role = args.get("role", "auto")
+
+    if not pokemon_name:
+        return {"tool_result": "Error: No Pokémon found in your query."}
 
     logger.info(f"[items_tool] Calling recommend_items({pokemon_name}, {role})")
     result = recommend_items(pokemon_name=pokemon_name, role=role)
@@ -280,8 +282,8 @@ def _format_items_response(raw: str, names: list[str], role: Optional[str]) -> s
     rec_items = _parse_section(raw, "AI RECOMMENDED") or _parse_section(raw, "RECOMMENDED FOR THIS ROLE")
 
     lines = [
-        f"**Rol: {role_display}**",
-        f"Stats: {stats}{cost_str}",
+        f"**{pokemon_name.replace('_', ' ').title()}**",
+        f"Rol: {role_display} | {stats}{cost_str}",
         "",
         "**FROM BOTS (REAL DATA)**"
     ]
@@ -297,11 +299,6 @@ def _format_items_response(raw: str, names: list[str], role: Optional[str]) -> s
         lines.append("**AI RECOMMENDED**")
         for item_line in rec_items[:5]:
             lines.append(f"• {item_line}")
-
-    # Add legend at the bottom
-    lines.append("")
-    lines.append("---")
-    lines.append("*Legend: (2x = Usage, 8% = Pickrate, ELO = Avg. player rank)*")
 
     return "\n".join(lines)
 
