@@ -146,18 +146,36 @@ def analyst(state: AgentState) -> dict:
     
     specs_text = "\n".join(specs)
     
+    # Determine the strategy hierarchy based on Data Quality
+    if "Data quality: HIGH" in raw_data:
+        instruction = (
+            "The BOT META DATA contains real HIGH-ELO validated items. "
+            "CONFIRM and EXPLAIN the top items from that data. "
+            "Do NOT suggest alternatives or contradict them."
+        )
+    elif "Data quality: MEDIUM" in raw_data:
+        instruction = (
+            "Bot data exists but from MEDIUM ELO players. "
+            "Use bot items as base, you may suggest 1 mathematical complement. "
+            "Be transparent that data is not high-ELO validated."
+        )
+    else:
+        instruction = (
+            "No high-ELO data available. Give a theoretical build "
+            "and EXPLICITLY WARN the user this is not meta-validated."
+        )
+
     prompt = (
-        "You are a master Pokémon Auto Chess strategist. Provide the OPTIMAL build.\n"
-        "CONTEXT:\n"
-        f"- User Question: {state['user_input']}\n"
-        f"- Bot Meta Data: {raw_data}\n"
-        f"- Item Specs:\n{specs_text}\n\n"
+        "You are a master Pokémon Auto Chess strategist. Respond ALWAYS in the same language as the user.\n"
+        f"INSTRUCTION: {instruction}\n"
+        f"ITEM SPECS (Use to explain reasons): {specs_text}\n\n"
         "RULES:\n"
-        "1. Compare Bot Meta vs Math to find the best 3-item synergy.\n"
-        "2. Respond ALWAYS in the same language as the user.\n"
-        "3. Use **BOLD** for ALL items and key terms.\n"
-        "4. STRICTLY CONCISE: Max 2 short sentences. NO filler like 'mathematically superior' or 'surpasses the meta'.\n"
-        "5. Format: [Build recommendation] + [Brief tactical reason]. STOP."
+        "1. ALWAYS keep item names in ENGLISH.\n"
+        "2. Use **BOLD** for all items.\n"
+        "3. Max 2 short sentences.\n"
+        "4. Format: [Build] + [Reason]. STOP."
+        f"\n\nUser Question: {state['user_input']}\n"
+        f"Bot Meta Data: {raw_data}"
     )
     response = llm.invoke([{"role": "user", "content": prompt}])
     
@@ -177,6 +195,12 @@ def formatter(state: AgentState) -> dict:
     # Simple extraction for the display
     role_match = re.search(r"Role detected: ([\w_]+)", raw)
     role_display = role_match.group(1).replace("_", " ").upper() if role_match else "AUTO"
+    
+    quality_match = re.search(r"Data quality: (\w+)", raw)
+    quality = quality_match.group(1) if quality_match else "LOW"
+    quality_map = {"HIGH": "HIGH ✅", "MEDIUM": "MEDIUM ⚠️", "LOW": "LOW ❓"}
+    quality_display = quality_map.get(quality, "LOW ❓")
+
     stats = f"HP: {pdata.get('hp', '?')} | DEF: {pdata.get('def', '?')} | Range: {pdata.get('range', '?')}"
     
     lines = []
@@ -187,6 +211,7 @@ def formatter(state: AgentState) -> dict:
     lines += [
         f"**{pokemon_name.replace('_', ' ').title()}**",
         f"Rol: {role_display} | {stats}",
+        f"**Confidence: {quality_display}**",
         "",
         "**FROM BOTS (REAL DATA)**"
     ]

@@ -137,6 +137,25 @@ def _item_has_useful_stats(item_name: str, min_stat: int = 10) -> bool:
     return False
 
 
+def _elo_weighted_score(item_data: dict | int, total: int) -> float:
+    """
+    Calculate a score based on quality (ELO) and popularity (Frequency).
+    ELO weights 60%, Frequency weights 40%.
+    """
+    if not isinstance(item_data, dict):
+        return float(item_data)
+    
+    count = item_data.get("count", 0)
+    elo_total = item_data.get("elo_total", 0)
+    
+    freq_score = (count / total * 100) if total > 0 else 0
+    avg_elo = (elo_total / count) if count > 0 else 0
+    
+    # Normalize ELO over a 1500 base (avg ELO estimate)
+    elo_score = (avg_elo / 1500) * 100
+    
+    return (elo_score * 0.6) + (freq_score * 0.4)
+
 def recommend_items(pokemon_name: str, role: str = "auto") -> str:
     """
     Recommend the best items to equip on a specific Pokémon.
@@ -159,17 +178,34 @@ def recommend_items(pokemon_name: str, role: str = "auto") -> str:
     has_bot_data = bool(p.get("recommended_items")) and freq
 
     if has_bot_data:
+        # Sort by ELO-weighted quality instead of just count
         sorted_items = sorted(
             freq.items(),
-            key=lambda kv: (kv[1]["count"] if isinstance(kv[1], dict) else kv[1]),
+            key=lambda kv: _elo_weighted_score(kv[1], total_item_assignments),
             reverse=True
         )
         top_bot = [(item, data) for item, data in sorted_items[:6]]
         useful_bot_items = [x for x in top_bot if _item_has_useful_stats(x[0])]
 
+        # Determine data quality based on ELO
+        HIGH_ELO_THRESHOLD = 1500
+        high_elo_items = [
+            x for x in useful_bot_items
+            if isinstance(x[1], dict) 
+            and x[1].get("count", 0) > 0
+            and (x[1].get("elo_total", 0) / x[1]["count"]) >= HIGH_ELO_THRESHOLD
+        ]
+        
+        data_quality = (
+            "HIGH" if len(high_elo_items) >= 2 else
+            "MEDIUM" if useful_bot_items else
+            "LOW"
+        )
+
         lines = [
             f"=== Item recommendations for {p['name']} ===",
             f"Types: {', '.join(p['types'])}",
+            f"Data quality: {data_quality}",
             f"Role detected: {effective_role} (HP {p['hp']}, DEF {p['def']}, Range {p['range']})",
         ]
 
